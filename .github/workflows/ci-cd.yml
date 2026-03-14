@@ -28,12 +28,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Print secret (masked by GitHub)
+        run: echo "SECRET_KEY=${{ secrets.SECRET_KEY }}"
+
       - name: Build Docker image
         run: docker build -t hello-fastapi .
 
-      - name: Run container and health check
+      - name: Run container with secret and health check
         run: |
-          docker run -d -p 8000:8000 --name app hello-fastapi
+          docker run -d -p 8000:8000 --name app -e SECRET_KEY=${{ secrets.SECRET_KEY }} hello-fastapi
           sleep 3
           curl -f http://localhost:8000
           docker stop app
